@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"name": "Resume-Tracker",
+			"path": "../../../../../../../../Documents/GitHub/Resume-Tracker"
+		},
+		{
+			"name": "resumetracker",
+			"path": "../../../../../.."
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}
