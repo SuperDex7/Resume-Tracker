@@ -1,13 +1,13 @@
-package com.example.ResumeTracker;
+package com.res.resumetracker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ResumeTrackerApplication {
+public class ResumetrackerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ResumeTrackerApplication.class, args);
+		SpringApplication.run(ResumetrackerApplication.class, args);
 	}
 
 }
