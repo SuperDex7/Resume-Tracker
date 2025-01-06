@@ -17,3 +17,6 @@ public class ResumetrackerApplication {
 	
 	}
 }
+/*
+ * curl -X POST http://localhost:8080/api/resumes \  -H "Content-Type: application/json" \  -d '{  "company": "TechCorp",  "jobTitle": "Software Engineer", "jobDescription": "Develop and maintain web applications",  "dateApplied": "2025-01-06",  "status": "Pending" }' 
+ */
