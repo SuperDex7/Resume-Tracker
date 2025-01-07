@@ -1,0 +1,48 @@
+.list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 16px; 
+    padding: 0;
+    list-style-type: none; 
+  }
+  
+  .card {
+    border: 1px solid #ddd;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  }
+  
+  .company {
+    margin: 0 0 4px 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .jobTitle {
+    margin: 0 0 16px 0;
+    font-size: 1.2rem;
+    font-weight: normal;
+    color: #555;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .controls label {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  
+  .controls select {
+    padding: 4px 8px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
