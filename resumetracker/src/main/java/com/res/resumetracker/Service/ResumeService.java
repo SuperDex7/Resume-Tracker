@@ -35,57 +35,33 @@ public class ResumeService {
     public Resume updateResume(String id, Resume updatedResume) {
         return resumeRepository.findById(id)
                 .map(existingResume -> {
-                    String resumeFilePath = updatedResume.resumeFilePath() != null
-                            ? updatedResume.resumeFilePath()
-                            : existingResume.resumeFilePath();
-                    String coverFilePath = updatedResume.coverFilePath() != null
-                            ? updatedResume.coverFilePath()
-                            : existingResume.coverFilePath();
-
-                    Resume finalResume = new Resume(
-                            existingResume.id(),
-                            updatedResume.company(),
-                            updatedResume.jobTitle(),
-                            updatedResume.jobDescription(),
-                            updatedResume.dateApplied(),
-                            updatedResume.status(),
-                            resumeFilePath,
-                            coverFilePath
-                    );
-    
-                    return resumeRepository.save(finalResume);
+                    return resumeRepository.save(updatedResume);
                 })
                 .orElseThrow(() -> new RuntimeException("Resume not found with id: " + id));
     }
     
-    public Resume partiallyUpdateResume(String id, Map<String, Object> updates) {
+    
+    public Resume partiallyUpdateResume(String id, Map<String, String> updates) {
         return resumeRepository.findById(id)
                 .map(existingResume -> {
-                    // Extract and preserve fields from existingResume
-                    String company = updates.containsKey("company") ? (String) updates.get("company") : existingResume.company();
-                    String jobTitle = updates.containsKey("jobTitle") ? (String) updates.get("jobTitle") : existingResume.jobTitle();
-                    String jobDescription = updates.containsKey("jobDescription") ? (String) updates.get("jobDescription") : existingResume.jobDescription();
-                    LocalDate dateApplied = updates.containsKey("dateApplied")
-                            ? LocalDate.parse((String) updates.get("dateApplied"))
-                            : existingResume.dateApplied();
-                    String status = updates.containsKey("status") ? (String) updates.get("status") : existingResume.status();
-                    String resumeFilePath = updates.containsKey("resumeFilePath") ? (String) updates.get("resumeFilePath") : existingResume.resumeFilePath();
-                    String coverFilePath = updates.containsKey("coverFilePath") ? (String) updates.get("coverFilePath") : existingResume.coverFilePath();
-    
-                    Resume finalResume = new Resume(
-                            existingResume.id(),
-                            company,
-                            jobTitle,
-                            jobDescription,
-                            dateApplied,
-                            status,
-                            resumeFilePath,
-                            coverFilePath
+                    // Apply updates and save
+                    Resume updatedResume = new Resume(
+                        existingResume.id(),
+                        updates.getOrDefault("company", existingResume.company()),
+                        updates.getOrDefault("jobTitle", existingResume.jobTitle()),
+                        updates.getOrDefault("jobDescription", existingResume.jobDescription()),
+                        updates.containsKey("dateApplied")
+                            ? LocalDate.parse(updates.get("dateApplied"))
+                            : existingResume.dateApplied(),
+                        updates.getOrDefault("status", existingResume.status()),
+                        existingResume.resumeFilePath(),
+                        existingResume.coverFilePath()
                     );
     
-                    return resumeRepository.save(finalResume);
+                    return resumeRepository.save(updatedResume);
                 })
                 .orElseThrow(() -> new RuntimeException("Resume not found with id: " + id));
     }
+    
     
 }
