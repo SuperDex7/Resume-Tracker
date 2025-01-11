@@ -14,5 +14,7 @@ public record Resume(
     String jobTitle,
     String jobDescription,
     LocalDate dateApplied,
-    String status
+    String status,
+    String resumeFilePath, 
+    String coverFilePath
 ) {}
