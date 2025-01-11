@@ -5,5 +5,7 @@ export interface Resume {
     jobDescription: string;
     dateApplied: string;
     status: string;
+    resumeFilePath: string;
+    coverFilePath: string;
   }
   

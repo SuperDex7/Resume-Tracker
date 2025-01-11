@@ -35,3 +35,5 @@ build/
 ### ENV File ###
 .env
 
+### Uploads ###
+/uploads

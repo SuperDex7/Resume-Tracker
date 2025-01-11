@@ -43,9 +43,13 @@ const ResumeList = () => {
     setSortOption(e.target.value);
   };
 
-  const handleAddResume = (formData: Resume) => {
+  const handleAddResume = (formData: FormData) => {
     axios
-      .post('http://localhost:8080/api/resumes', formData)
+      .post('http://localhost:8080/api/resumes', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       .then(() => fetchResumes())
       .catch(() => setError('Failed to add resume'));
     setShowAddForm(false);
@@ -62,15 +66,42 @@ const ResumeList = () => {
     setEditMode(id);
   };
 
-  const handleSaveEdit = (updatedResume: Resume) => {
+  const handleSaveEdit = (updatedResume: Resume, newFiles: { resumeFile?: File; coverLetterFile?: File }) => {
+    const data = new FormData();
+    data.append('company', updatedResume.company);
+    data.append('jobTitle', updatedResume.jobTitle);
+    data.append('jobDescription', updatedResume.jobDescription || '');
+    data.append('dateApplied', updatedResume.dateApplied);
+    data.append('status', updatedResume.status);
+
+    if (newFiles.resumeFile) {
+        data.append('resumeFile', newFiles.resumeFile);
+    }
+    if (newFiles.coverLetterFile) {
+      data.append("coverLetterFile", newFiles.coverLetterFile); // Append actual File object
+  }
+
+    // Debugging log
+    console.log("FormData being sent:");
+    for (let [key, value] of data.entries()) {
+        console.log(`${key}:`, value);
+    }
+
     axios
-      .put(`http://localhost:8080/api/resumes/${updatedResume.id}`, updatedResume)
-      .then(() => {
-        setEditMode(null);
-        fetchResumes();
-      })
-      .catch(() => setError('Failed to update resume'));
-  };
+        .put(`http://localhost:8080/api/resumes/${updatedResume.id}`, data, {
+            
+        })
+        .then(() => {
+            setEditMode(null);
+            fetchResumes(); // Refresh after updating
+        })
+        .catch((error) => {
+            console.error('Failed to update resume:', error);
+            setError('Failed to update resume');
+        });
+};
+
+
 
   const handleCancelEdit = () => {
     setEditMode(null);
