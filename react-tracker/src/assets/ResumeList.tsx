@@ -10,8 +10,9 @@ const ResumeList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [editingResumeId, setEditingResumeId] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<string>('dateDescending');
-  const [editMode, setEditMode] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const fetchResumes = () => {
     setLoading(true);
@@ -27,28 +28,34 @@ const ResumeList = () => {
       });
   };
 
-  const getSortedResumes = () => {
-    const sortedResumes = [...resumes];
+  const getFilteredAndSortedResumes = () => {
+    let filteredResumes = resumes.filter((resume) =>
+      resume.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      resume.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     if (sortOption === 'dateDescending') {
-      sortedResumes.sort((a, b) => new Date(b.dateApplied).getTime() - new Date(a.dateApplied).getTime());
+      filteredResumes.sort((a, b) => new Date(b.dateApplied).getTime() - new Date(a.dateApplied).getTime());
     } else if (sortOption === 'dateAscending') {
-      sortedResumes.sort((a, b) => new Date(a.dateApplied).getTime() - new Date(b.dateApplied).getTime());
+      filteredResumes.sort((a, b) => new Date(a.dateApplied).getTime() - new Date(b.dateApplied).getTime());
     } else if (sortOption === 'status') {
-      sortedResumes.sort((a, b) => a.status.localeCompare(b.status));
+      filteredResumes.sort((a, b) => a.status.localeCompare(b.status));
     }
-    return sortedResumes;
+    return filteredResumes;
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOption(e.target.value);
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   const handleAddResume = (formData: FormData) => {
     axios
       .post('http://localhost:8080/api/resumes', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       })
       .then(() => fetchResumes())
       .catch(() => setError('Failed to add resume'));
@@ -62,49 +69,22 @@ const ResumeList = () => {
       .catch(() => setError('Failed to delete resume'));
   };
 
-  const handleEditResume = (id: string) => {
-    setEditMode(id);
+  const handleSaveEdit = (updatedResume: Resume) => {
+    axios
+      .put(`http://localhost:8080/api/resumes/${updatedResume.id}`, updatedResume)
+      .then(() => {
+        fetchResumes();
+        setEditingResumeId(null);
+      })
+      .catch(() => setError('Failed to update resume'));
   };
 
-  const handleSaveEdit = (updatedResume: Resume, newFiles: { resumeFile?: File; coverLetterFile?: File }) => {
-    const data = new FormData();
-    data.append('company', updatedResume.company);
-    data.append('jobTitle', updatedResume.jobTitle);
-    data.append('jobDescription', updatedResume.jobDescription || '');
-    data.append('dateApplied', updatedResume.dateApplied);
-    data.append('status', updatedResume.status);
-
-    if (newFiles.resumeFile) {
-        data.append('resumeFile', newFiles.resumeFile);
-    }
-    if (newFiles.coverLetterFile) {
-      data.append("coverLetterFile", newFiles.coverLetterFile); // Append actual File object
-  }
-
-    // Debugging log
-    console.log("FormData being sent:");
-    for (let [key, value] of data.entries()) {
-        console.log(`${key}:`, value);
-    }
-
-    axios
-        .put(`http://localhost:8080/api/resumes/${updatedResume.id}`, data, {
-            
-        })
-        .then(() => {
-            setEditMode(null);
-            fetchResumes(); // Refresh after updating
-        })
-        .catch((error) => {
-            console.error('Failed to update resume:', error);
-            setError('Failed to update resume');
-        });
-};
-
-
+  const handleEdit = (id: string) => {
+    setEditingResumeId(id);
+  };
 
   const handleCancelEdit = () => {
-    setEditMode(null);
+    setEditingResumeId(null);
   };
 
   useEffect(() => {
@@ -113,21 +93,30 @@ const ResumeList = () => {
 
   return (
     <div>
-      <h1>Resume Tracker</h1>
+      <h1 className={styles.title}>Resume Tracker</h1>
 
-      <div className={styles.controls}>
-        <label htmlFor="sort">Sort by:</label>
-        <select id="sort" value={sortOption} onChange={handleSortChange}>
-          <option value="dateDescending">Date Applied (Newest First)</option>
-          <option value="dateAscending">Date Applied (Oldest First)</option>
-          <option value="status">Status</option>
-        </select>
-        {!showAddForm && <button onClick={() => setShowAddForm(true)}>Add New Resume</button>}
-      </div>
+      <div className={styles.controlsRow}>
+  <button onClick={() => setShowAddForm(true)} className={styles.addButton}>
+    Add Resume
+  </button>
+  <div className={styles.searchAndSort}>
+    <input
+      type="text"
+      placeholder="Search..."
+      value={searchQuery}
+      onChange={handleSearchChange}
+      className={styles.searchInput}
+    />
+    <select value={sortOption} onChange={handleSortChange} className={styles.sortDropdown}>
+      <option value="dateDescending">Date Applied (Newest First)</option>
+      <option value="dateAscending">Date Applied (Oldest First)</option>
+      <option value="status">Status</option>
+    </select>
+  </div>
+</div>
 
-      {showAddForm && (
-        <AddResumeForm onAdd={handleAddResume} onCancel={() => setShowAddForm(false)} />
-      )}
+
+      {showAddForm && <AddResumeForm onAdd={handleAddResume} onCancel={() => setShowAddForm(false)} />}
 
       <hr />
 
@@ -137,12 +126,12 @@ const ResumeList = () => {
         <p>{error}</p>
       ) : (
         <ul className={styles.list}>
-          {getSortedResumes().map((resume) => (
+          {getFilteredAndSortedResumes().map((resume) => (
             <li key={resume.id}>
               <ResumeCard
                 resume={resume}
-                isEditing={editMode === resume.id}
-                onEdit={() => handleEditResume(resume.id!)}
+                isEditing={editingResumeId === resume.id}
+                onEdit={() => handleEdit(resume.id!)}
                 onSave={handleSaveEdit}
                 onCancel={handleCancelEdit}
                 onDelete={handleDeleteResume}
