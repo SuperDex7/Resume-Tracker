@@ -53,8 +53,7 @@ const ResumeCard = ({ resume, isEditing, onEdit, onSave, onCancel, onDelete }: P
         coverFilePath: coverLetterFile ? coverLetterFile.name : formData.coverFilePath,
         
     };
-    console.log('Calling onSave with updated resume and files:');
-    console.log(updatedResume, { resumeFile, coverLetterFile });
+    
     onSave(updatedResume, {
         resumeFile: resumeFile || undefined,
         coverLetterFile: coverLetterFile || undefined,
@@ -86,73 +85,93 @@ const ResumeCard = ({ resume, isEditing, onEdit, onSave, onCancel, onDelete }: P
   if (isEditing) {
     return (
       <div className={styles.card}>
-        <div className={styles.headerRow}>
-          <input
-            type="text"
-            name="company"
-            value={formData.company}
-            onChange={handleInputChange}
-            className={styles.companyInput}
-            placeholder="Company Name"
-          />
-        </div>
-        <input
-          type="text"
-          name="jobTitle"
-          value={formData.jobTitle}
-          onChange={handleInputChange}
-          className={styles.jobTitleInput}
-          placeholder="Job Title"
-        />
-        <textarea
-          name="jobDescription"
-          value={formData.jobDescription}
-          onChange={handleInputChange}
-          className={styles.jobDescriptionInput}
-          placeholder="Job Description"
-        />
-        <select
-          name="status"
-          value={formData.status}
-          onChange={handleInputChange}
-          className={styles.statusDropdown}
-        >
-          <option value="Pending">Pending</option>
-          <option value="Interview">Interview</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Offer Received">Offer Received</option>
-        </select>
-        <div className={styles.fileInputs}>
-          <div>
-          <label htmlFor="resumeFile">Upload Resume:</label>
-                <input
-                    type="file"
-                    id="resumeFile"
-                    name="resumeFile"
-                    onChange={handleFileChange}
-                />
-            <p>
-              Current Resume: {resumeFile ? resumeFile.name : resume.resumeFilePath ? 'Uploaded' : 'None'}
-            </p>
+        <form className={styles.editForm}>
+          <h3 className={styles.title}>Edit Resume</h3>
+          <div className={styles.formGroup}>
+            <label htmlFor="company">Company Name:</label>
+            <input
+              type="text"
+              id="company"
+              name="company"
+              value={formData.company}
+              onChange={handleInputChange}
+              className={styles.input}
+            />
           </div>
-          <div>
-          <label htmlFor="coverLetterFile">Upload Cover Letter:</label>
-                <input
-                    type="file"
-                    id="coverLetterFile"
-                    name="coverLetterFile"
-                    onChange={handleFileChange}
-                />
-            <p>
-              Current Cover Letter:{' '}
-              {coverLetterFile ? coverLetterFile.name : resume.coverFilePath ? 'Uploaded' : 'None'}
-            </p>
+          <div className={styles.formGroup}>
+            <label htmlFor="jobTitle">Job Title:</label>
+            <input
+              type="text"
+              id="jobTitle"
+              name="jobTitle"
+              value={formData.jobTitle}
+              onChange={handleInputChange}
+              className={styles.input}
+            />
           </div>
-        </div>
-        <div className={styles.actions}>
-          <button onClick={saveChanges}>Save</button>
-          <button onClick={onCancel}>Cancel</button>
-        </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="jobDescription">Job Description:</label>
+            <textarea
+              id="jobDescription"
+              name="jobDescription"
+              value={formData.jobDescription}
+              onChange={handleInputChange}
+              className={styles.textarea}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="status">Status:</label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleInputChange}
+              className={styles.select}
+            >
+              <option value="Pending">Pending</option>
+              <option value="Interview">Interview</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Offer Received">Offer Received</option>
+            </select>
+          </div>
+          <div className={styles.fileGroup}>
+            <div>
+              <label htmlFor="resumeFile">Upload Resume:</label>
+              <input
+                type="file"
+                id="resumeFile"
+                name="resumeFile"
+                onChange={handleFileChange}
+                className={styles.fileInput}
+              />
+              <p>
+                Current Resume: {resumeFile ? resumeFile.name : resume.resumeFilePath ? 'Uploaded' : 'None'}
+              </p>
+            </div>
+            <div>
+              <label htmlFor="coverLetterFile">Upload Cover Letter:</label>
+              <input
+                type="file"
+                id="coverLetterFile"
+                name="coverLetterFile"
+                onChange={handleFileChange}
+                className={styles.fileInput}
+              />
+              <p>
+                Current Cover Letter:{' '}
+                {coverLetterFile ? coverLetterFile.name : resume.coverFilePath ? 'Uploaded' : 'None'}
+              </p>
+            </div>
+          </div>
+          <div className={styles.actions}>
+            <button type="button" onClick={saveChanges} className={styles.saveButton}>
+              Save
+            </button>
+            <button type="button" onClick={onCancel} className={styles.cancelButton}>
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     );
   }
