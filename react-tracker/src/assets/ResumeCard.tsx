@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Resume } from '../types/Resume';
 import styles from './ResumeCard.module.css';
 
@@ -186,7 +186,7 @@ const ResumeCard = ({ resume, isEditing, onEdit, onSave, onCancel, onDelete }: P
       <div className={styles.titleRow}>
         <h3 className={styles.jobTitle}>{resume.jobTitle}</h3>
         <p className={styles.date}>
-          <strong>Date Applied:</strong> {format(new Date(resume.dateApplied), 'MM/dd/yyyy')}
+          <strong>Date Applied:</strong> {format(parseISO(resume.dateApplied), 'MM/dd/yyyy')}
         </p>
       </div>
       <p>
