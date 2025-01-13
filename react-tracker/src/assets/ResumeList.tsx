@@ -69,16 +69,33 @@ const ResumeList = () => {
       .catch(() => setError('Failed to delete resume'));
   };
 
-  const handleSaveEdit = (updatedResume: Resume) => {
+  const handleSaveEdit = (updatedResume: Resume, newFiles: { resumeFile?: File; coverLetterFile?: File }) => {
+    const data = new FormData();
+    data.append('company', updatedResume.company);
+    data.append('jobTitle', updatedResume.jobTitle);
+    data.append('jobDescription', updatedResume.jobDescription || '');
+    data.append('dateApplied', updatedResume.dateApplied);
+    data.append('status', updatedResume.status);
+
+    if (newFiles.resumeFile) {
+      data.append('resumeFile', newFiles.resumeFile);
+    }
+    if (newFiles.coverLetterFile) {
+      data.append('coverLetterFile', newFiles.coverLetterFile);
+    }
+
     axios
-      .put(`http://localhost:8080/api/resumes/${updatedResume.id}`, updatedResume)
+      .put(`http://localhost:8080/api/resumes/${updatedResume.id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       .then(() => {
-        fetchResumes();
         setEditingResumeId(null);
+        fetchResumes();
       })
       .catch(() => setError('Failed to update resume'));
   };
-
   const handleEdit = (id: string) => {
     setEditingResumeId(id);
   };
